@@ -45,3 +45,20 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Visual Studio Auto-Generated Files
+*.sdf
+*.exe
+*.suo
+*.sln
+*.opensdf
+*.vcxproj.user
+*.vcxproj.filters
+*.vcxproj
+Debug
+Release
+x64
+kinect-v2-cpp-service/Debug
+kinect-v2-cpp-service/Release
+kinect-v2-cpp-service/x64
+
