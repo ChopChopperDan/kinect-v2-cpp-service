@@ -1,4 +1,5 @@
-service sensors.kinect2
+service edu.rpi.cats.sensors.kinect2
+import edu.rpi.cats.sensors.camera_interface
 
 option version 0.5
 
@@ -7,8 +8,6 @@ option version 0.5
 #	field single[] points
 #	field uint8[] RGB_data
 #end struct
-
-
 
 struct KinectBody
 	
@@ -26,8 +25,6 @@ struct KinectBody
 	
 end struct
 
-
-
 struct KinectMultiSource
     field uint8 Color
     field uint8 Depth
@@ -37,47 +34,32 @@ struct KinectMultiSource
     field uint8 LongExposureInfrared
 end struct
 
-struct Image
-	field int32 width
-	field int32 height
-	field int32 channels
-	field uint8[] data
-end struct
-
-struct DepthImage
-	field int32 width
-	field int32 height
-	field int32 channels
-	field uint16[] data
-end struct
-
-struct ImageHeader
-	field int32 width
-	field int32 height
-	field int32 channels
-	field uint8 step
-end struct
-
 object Kinect
-    
+    implements edu.rpi.cats.sensors.camera_interface.Camera
 	
+    #Added to comply with camera_interface, not supported usage right now
+    function void StartStreaming()
+    function void StopStreaming()
+    
     function uint8 EnableSensors(KinectMultiSource s)
     function uint8 DisableSensors()
     function KinectMultiSource SensorsEnabled()
     	
-	function ImageHeader getColorImageHeader()
-	function ImageHeader getDepthImageHeader()
+	function edu.rpi.cats.sensors.camera_interface.ImageHeader getImageHeader()
+	function edu.rpi.cats.sensors.camera_interface.ImageHeader getDepthImageHeader()
 	
-	function Image getCurrentColorImage()
-	function DepthImage getCurrentDepthImage()
-	function DepthImage getCurrentInfraredImage()
-	function Image getCurrentBodyIndexImage()
-	function DepthImage getCurrentLongExposureInfraredImage()
+	function edu.rpi.cats.sensors.camera_interface.Image getCurrentImage()
+	function edu.rpi.cats.sensors.camera_interface.Image16 getCurrentDepthImage()
+	function edu.rpi.cats.sensors.camera_interface.Image16 getCurrentInfraredImage()
+	function edu.rpi.cats.sensors.camera_interface.Image getCurrentBodyIndexImage()
+	function edu.rpi.cats.sensors.camera_interface.Image16 getCurrentLongExposureInfraredImage()
 	
     function uint64[6] getTrackedBodyIDs()
 	function KinectBody getDetectedBody(int32 index)
 	#function double[3] getGroundPlaneOrientation
 	
+    pipe edu.rpi.cats.sensors.camera_interface.Image ImageStream
+    
 	#function uint8 EnablePointCloudGeneration(uint8 with_color)
 	#function uint8 DisablePointCloudGeneration()
 	#function PointCloud getCurrentPointCloud()
