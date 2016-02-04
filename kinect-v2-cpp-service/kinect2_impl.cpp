@@ -1,6 +1,6 @@
 #include "kinect2_impl.h"
 
-Kinect2_impl::Kinect2_impl() : sensors::kinect2::Kinect()
+Kinect2_impl::Kinect2_impl() : edu::rpi::cats::sensors::kinect2::Kinect()
 { 
 
 	this->multi_reader = NULL;
@@ -103,7 +103,27 @@ HRESULT Kinect2_impl::ShutdownKinect()
 	return hr;
 }
 
-uint8_t Kinect2_impl::EnableSensors(RR_SHARED_PTR<sensors::kinect2::KinectMultiSource > s)
+void Kinect2_impl::StartStreaming()
+{
+	std::cout << "This is not a supported function in the kinect-v2-cpp-service.  Use EnableSensors(KinectMultiSource) instead" << std::endl;
+}
+void Kinect2_impl::StopStreaming()
+{
+	std::cout << "This is not a supported function in the kinect-v2-cpp-service.  Use DisableSensors() instead" << std::endl;
+}
+
+RR_SHARED_PTR<RobotRaconteur::Pipe<RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > > > Kinect2_impl::get_ImageStream()
+{
+	return image_pipe;
+}
+
+void Kinect2_impl::set_ImageStream(RR_SHARED_PTR<RobotRaconteur::Pipe<RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > > > value)
+{
+	image_pipe = value;
+	// TODO: Either set the callback function for the pipe or add supplied Pipe to the pipe broadcaster
+}
+
+uint8_t Kinect2_impl::EnableSensors(RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectMultiSource > s)
 {
 	if (this->enabledSources > 0)
 	{
@@ -144,11 +164,11 @@ uint8_t Kinect2_impl::DisableSensors()
 	return 1;
 }
 
-RR_SHARED_PTR<sensors::kinect2::KinectMultiSource > Kinect2_impl::SensorsEnabled()
+RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectMultiSource > Kinect2_impl::SensorsEnabled()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::KinectMultiSource> S(new sensors::kinect2::KinectMultiSource());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectMultiSource> S(new edu::rpi::cats::sensors::kinect2::KinectMultiSource());
 	
 	S->Body = (this->enabledSources & FrameSourceTypes_Body) ? 1 : 0;
 	S->BodyIndex = (this->enabledSources & FrameSourceTypes_BodyIndex) ? 1 : 0;
@@ -160,11 +180,11 @@ RR_SHARED_PTR<sensors::kinect2::KinectMultiSource > Kinect2_impl::SensorsEnabled
 	return S;
 }
 
-RR_SHARED_PTR<sensors::kinect2::ImageHeader > Kinect2_impl::getColorImageHeader()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::ImageHeader > Kinect2_impl::getImageHeader()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::ImageHeader> I(new sensors::kinect2::ImageHeader());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::ImageHeader> I(new edu::rpi::cats::sensors::camera_interface::ImageHeader());
 
 	I->width = this->color_image_width;
 	I->height = this->color_image_height;
@@ -174,11 +194,11 @@ RR_SHARED_PTR<sensors::kinect2::ImageHeader > Kinect2_impl::getColorImageHeader(
 	return I;
 
 }
-RR_SHARED_PTR<sensors::kinect2::ImageHeader > Kinect2_impl::getDepthImageHeader()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::ImageHeader > Kinect2_impl::getDepthImageHeader()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::ImageHeader> I(new sensors::kinect2::ImageHeader());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::ImageHeader> I(new edu::rpi::cats::sensors::camera_interface::ImageHeader());
 
 	I->width = this->depth_image_width;
 	I->height = this->depth_image_height;
@@ -189,11 +209,11 @@ RR_SHARED_PTR<sensors::kinect2::ImageHeader > Kinect2_impl::getDepthImageHeader(
 
 }
 
-RR_SHARED_PTR<sensors::kinect2::Image > Kinect2_impl::getCurrentColorImage()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > Kinect2_impl::getCurrentImage()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::Image> I(new sensors::kinect2::Image());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image> I(new edu::rpi::cats::sensors::camera_interface::Image());
 
 	I->width = this->color_image_width;
 	I->height = this->color_image_height;
@@ -203,11 +223,11 @@ RR_SHARED_PTR<sensors::kinect2::Image > Kinect2_impl::getCurrentColorImage()
 	return I;
 
 }
-RR_SHARED_PTR<sensors::kinect2::DepthImage > Kinect2_impl::getCurrentDepthImage()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16 > Kinect2_impl::getCurrentDepthImage()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::DepthImage> I(new sensors::kinect2::DepthImage());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16> I(new edu::rpi::cats::sensors::camera_interface::Image16());
 
 	I->width = this->depth_image_width;
 	I->height = this->depth_image_height;
@@ -217,11 +237,11 @@ RR_SHARED_PTR<sensors::kinect2::DepthImage > Kinect2_impl::getCurrentDepthImage(
 	return I;
 
 }
-RR_SHARED_PTR<sensors::kinect2::DepthImage > Kinect2_impl::getCurrentInfraredImage()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16 > Kinect2_impl::getCurrentInfraredImage()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::DepthImage> I(new sensors::kinect2::DepthImage());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16> I(new edu::rpi::cats::sensors::camera_interface::Image16());
 
 	I->width = this->depth_image_width;
 	I->height = this->depth_image_height;
@@ -233,11 +253,11 @@ RR_SHARED_PTR<sensors::kinect2::DepthImage > Kinect2_impl::getCurrentInfraredIma
 }
 
 
-RR_SHARED_PTR<sensors::kinect2::Image > Kinect2_impl::getCurrentBodyIndexImage()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > Kinect2_impl::getCurrentBodyIndexImage()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::Image> I(new sensors::kinect2::Image());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image> I(new edu::rpi::cats::sensors::camera_interface::Image());
 
 	I->width = this->depth_image_width;
 	I->height = this->depth_image_height;
@@ -247,11 +267,11 @@ RR_SHARED_PTR<sensors::kinect2::Image > Kinect2_impl::getCurrentBodyIndexImage()
 	return I;
 }
 
-RR_SHARED_PTR<sensors::kinect2::DepthImage > Kinect2_impl::getCurrentLongExposureInfraredImage()
+RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16 > Kinect2_impl::getCurrentLongExposureInfraredImage()
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 
-	RR_SHARED_PTR<sensors::kinect2::DepthImage> I(new sensors::kinect2::DepthImage());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16> I(new edu::rpi::cats::sensors::camera_interface::Image16());
 
 	I->width = this->depth_image_width;
 	I->height = this->depth_image_height;
@@ -272,12 +292,12 @@ RR_SHARED_PTR<RobotRaconteur::RRArray<uint64_t > > Kinect2_impl::getTrackedBodyI
 
 }
 
-RR_SHARED_PTR<sensors::kinect2::KinectBody > Kinect2_impl::getDetectedBody(int32_t index)
+RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectBody > Kinect2_impl::getDetectedBody(int32_t index)
 {
 	boost::lock_guard<boost::mutex> guard(mtx_);
 	HRESULT hr;
 
-	RR_SHARED_PTR<sensors::kinect2::KinectBody > body(new sensors::kinect2::KinectBody());
+	RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectBody > body(new edu::rpi::cats::sensors::kinect2::KinectBody());
 	
 	if (index >= BODY_COUNT)
 		return body;

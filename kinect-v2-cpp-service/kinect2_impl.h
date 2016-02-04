@@ -6,8 +6,8 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread.hpp>
 
-#include "sensors__kinect2.h"
-#include "sensors__kinect2_stubskel.h"
+#include "edu__rpi__cats__sensors__kinect2.h"
+#include "edu__rpi__cats__sensors__kinect2_stubskel.h"
 
 #include <Windows.h>
 #include <Kinect.h>
@@ -21,7 +21,7 @@
 
 #pragma once
 
-class Kinect2_impl : public sensors::kinect2::Kinect, public boost::enable_shared_from_this < Kinect2_impl >
+class Kinect2_impl : public edu::rpi::cats::sensors::kinect2::Kinect, public boost::enable_shared_from_this < Kinect2_impl >
 {
 public:
 
@@ -31,22 +31,27 @@ public:
 	HRESULT StartupKinect();
 	HRESULT ShutdownKinect();
 
+	virtual void StartStreaming();
+	virtual void StopStreaming();
 
-	virtual uint8_t EnableSensors(RR_SHARED_PTR<sensors::kinect2::KinectMultiSource > s);
+	virtual uint8_t EnableSensors(RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectMultiSource > s);
 	virtual uint8_t DisableSensors();
-	virtual RR_SHARED_PTR<sensors::kinect2::KinectMultiSource > SensorsEnabled();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectMultiSource > SensorsEnabled();
 
-	virtual RR_SHARED_PTR<sensors::kinect2::ImageHeader > getColorImageHeader();
-	virtual RR_SHARED_PTR<sensors::kinect2::ImageHeader > getDepthImageHeader();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::ImageHeader > getImageHeader();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::ImageHeader > getDepthImageHeader();
 
-	virtual RR_SHARED_PTR<sensors::kinect2::Image > getCurrentColorImage();
-	virtual RR_SHARED_PTR<sensors::kinect2::DepthImage > getCurrentDepthImage();
-	virtual RR_SHARED_PTR<sensors::kinect2::DepthImage > getCurrentInfraredImage();
-	virtual RR_SHARED_PTR<sensors::kinect2::Image > getCurrentBodyIndexImage();
-	virtual RR_SHARED_PTR<sensors::kinect2::DepthImage > getCurrentLongExposureInfraredImage();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > getCurrentImage();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16 > getCurrentDepthImage();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16 > getCurrentInfraredImage();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > getCurrentBodyIndexImage();
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image16 > getCurrentLongExposureInfraredImage();
+
+	virtual RR_SHARED_PTR<RobotRaconteur::Pipe<RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > > > get_ImageStream();
+	virtual void set_ImageStream(RR_SHARED_PTR<RobotRaconteur::Pipe<RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > > > value);
 
 	virtual RR_SHARED_PTR<RobotRaconteur::RRArray<uint64_t > > getTrackedBodyIDs();
-	virtual RR_SHARED_PTR<sensors::kinect2::KinectBody > getDetectedBody(int32_t index);
+	virtual RR_SHARED_PTR<edu::rpi::cats::sensors::kinect2::KinectBody > getDetectedBody(int32_t index);
 
 
 private:
@@ -61,6 +66,8 @@ private:
 
 	int color_image_width, color_image_height;
 	int depth_image_width, depth_image_height;
+
+	RR_SHARED_PTR<RobotRaconteur::Pipe<RR_SHARED_PTR<edu::rpi::cats::sensors::camera_interface::Image > > > image_pipe;
 
 	IKinectSensor *kinect;
 	IMultiSourceFrameReader *multi_reader;

@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
 
 	// Register Local Transport
 	boost::shared_ptr<RobotRaconteur::LocalTransport> t1 = boost::make_shared<RobotRaconteur::LocalTransport>();
-	t1->StartServerAsNodeName("sensors.kinect2");
+	t1->StartServerAsNodeName("edu.rpi.cats.sensors.kinect2");
 	RobotRaconteur::RobotRaconteurNode::s()->RegisterTransport(t1);
 
 	// Register TCP Transport on port 8888
@@ -23,13 +23,14 @@ int main(int argc, char* argv[])
 	boost::shared_ptr<Kinect2_impl> k = boost::make_shared<Kinect2_impl>();
 
 	// Register the service type with Robot Raconteur
-	RobotRaconteur::RobotRaconteurNode::s()->RegisterServiceType(boost::make_shared<sensors::kinect2::sensors__kinect2Factory>());
+	RobotRaconteur::RobotRaconteurNode::s()->RegisterServiceType(boost::make_shared<edu::rpi::cats::sensors::camera_interface::edu__rpi__cats__sensors__camera_interfaceFactory>());
+	RobotRaconteur::RobotRaconteurNode::s()->RegisterServiceType(boost::make_shared<edu::rpi::cats::sensors::kinect2::edu__rpi__cats__sensors__kinect2Factory>());
 
 	// Register the Kinect object as a service
-	RobotRaconteur::RobotRaconteurNode::s()->RegisterService("Kinect2", "sensors.kinect2", k);
+	RobotRaconteur::RobotRaconteurNode::s()->RegisterService("Kinect2", "edu.rpi.cats.sensors.kinect2", k);
 
 	std::cout << "Connect to the Kinect v2 Service at: " << std::endl;
-	std::cout << "tcp://localhost:8888/sensors.kinect2/Kinect2" << std::endl;
+	std::cout << "tcp://localhost:8888/edu.rpi.cats.sensors.kinect2/Kinect2" << std::endl;
 	std::cout << "Press enter to finish" << std::endl;
 	std::getline(std::cin, dummy);
 	k->ShutdownKinect();
